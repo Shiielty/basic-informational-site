@@ -1,43 +1,60 @@
-const http = require('http')
-const fs = require('fs')
+const express = require("express");
+const app = express();
+const port = 3000;
 
-console.log("Listening to port 8080")
-http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'text/html');
+const path = require("path");
 
-  // set routing
-  let path = ''
-  switch (req.url) {
-    case '/':
-      path = './index.html'
-      res.statusCode = 200;
-      break;
-    // try to redirect to homepage
-    case '/index':
-      res.statusCode = 301;
-      res.setHeader('Location', '/')
-      res.end();
-    case '/about':
-      path = './about.html'
-      res.statusCode = 200;
-      break;
-    case '/contact-me':
-      path = './contact-me.html'
-      res.statusCode = 200;
-      break;
-    default:
-      path = './404.html'
-      res.statusCode = 404;
-      break;
-  }
+const option = {
+  root: path.join(__dirname, "./"),
+};
 
-  // send html file
-  fs.readFile(path, (err, data) => {
+app.get("/", (req, res) => {
+  const fileName = "index.html";
+  res.sendFile(fileName, option, (err) => {
     if (err) {
       console.log(err);
-      res.end()
     } else {
-      res.end(data);
+      console.log("Sent:", fileName);
     }
-  })
-}).listen(8080)
+  });
+});
+
+app.get("/about", (req, res) => {
+  const fileName = "about.html";
+  res.sendFile(fileName, option, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Sent:", fileName);
+    }
+  });
+});
+
+app.get("/contact-me", (req, res) => {
+  const fileName = "contact-me.html";
+  res.sendFile(fileName, option, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Sent:", fileName);
+    }
+  });
+});
+
+// handle 404 Error page
+app.use((req, res, next) => {
+  res.status(404);
+  res.sendFile("404.html", option, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(`Sent: 404.html`);
+    }
+  });
+});
+
+app.listen(port, (err) => {
+  if (err) console.log(err);
+  console.log(`Server listening on port: ${port}`);
+});
+
